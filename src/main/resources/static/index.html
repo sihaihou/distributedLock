@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="css/reyco.css" type="text/css" />
+<style type="text/css">
+	a{
+		cursor: pointer;
+	}
+	.table tbody tr td,.table thead tr th {
+		 border: 1px solid #DDD;
+		 text-indent: 20px;
+		 padding: 5px 4px;
+		 font-size: 12px;
+	}
+	.am-form-group{
+		margin-bottom: 0.5em;
+	}
+</style>
+<script type="text/javascript" src="js/jquery-3.2.1.js"></script>
+<script type="text/javascript" src="js/template-native.js"></script>
+<script type="text/javascript" src="js/reyco.js"></script>
+<script type="text/javascript">
+
+function redisLock(){
+	for(var i=0;i<100;i++){
+		$.ajax({
+			type:'get',
+			dataType:"text",
+			url:"/api/redisLock",
+			data:{
+				time : new Date()
+			},
+			success : function(data) {
+			},
+			error:function() {
+			}
+		});
+	}
+}
+function mysqlLock(){
+	for(var i=0;i<100;i++){
+		$.ajax({
+			type:'get',
+			dataType:"text",
+			url:"/api/mysqlLock",
+			data:{
+				time : new Date()
+			},
+			success : function(data) {
+			},
+			error:function() {
+			}
+		});
+	}
+}
+</script>
+</head>
+<body>
+	<div style="display:inline"><a href="javascript:(0)" onclick="redisLock()">MySql加锁</a></div>
+	<div style="display:inline"><a href="javascript:(0)" onclick="mysqlLock()">Redis加锁</a></div>
+	
+</body>
+</html>

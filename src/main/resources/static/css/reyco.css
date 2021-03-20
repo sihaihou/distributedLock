@@ -1,0 +1,23 @@
+@charset "UTF-8";
+/*
+  	溢出文字隐藏100
+*/
+.display_none_100{ 
+	display:inline-block;
+    width:100px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    text-decoration:none;
+}
+/*
+  	溢出文字隐藏150
+*/
+.display_none_150{ 
+	display:inline-block;
+    width:150px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    text-decoration:none;
+}
