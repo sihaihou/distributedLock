@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Implementation-Title: distributedLock
 Implementation-Version: 0.0.1-SNAPSHOT
-Built-By: Terry
+Built-By: reyco
 Implementation-Vendor-Id: com.reyco.distributedLock
-Build-Jdk: 1.8.0_201
+Build-Jdk: 1.8.0_291
 Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
  ot-starter-parent/distributedLock
 Created-By: Maven Integration for Eclipse

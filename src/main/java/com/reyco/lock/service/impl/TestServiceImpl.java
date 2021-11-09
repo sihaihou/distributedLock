@@ -1,6 +1,7 @@
 package com.reyco.lock.service.impl;
 
-import java.util.concurrent.TimeUnit;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,13 +21,13 @@ import com.reyco.lock.service.TestService;
 import com.reyco.lock.utils.SnowFlake;
 
 @Service("testService")
-public class TestServiceImpl implements TestService{
-	
+public class TestServiceImpl implements TestService {
+
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
-	
+
 	@Autowired
 	private OrderDao orderDao;
-	
+
 	@Autowired
 	private ProductDao productDao;
 	@Autowired
@@ -36,60 +37,66 @@ public class TestServiceImpl implements TestService{
 		logger.info("执行目标方法test");
 		return "";
 	}
+
 	/**
 	 * mysql乐观锁测试
 	 */
-	@Transactional(propagation=Propagation.REQUIRED,isolation=Isolation.READ_COMMITTED )
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
 	public void testLock() {
-		Order order = new Order();
-		order.setNo(SnowFlake.getNextId().toString());
-		order.setState(1);
-		order.setDesc("remark");
-		order.setGmtExpire("2021-03-19 20:53:00");
-		order.setGmtCreate("2021-03-19 20:53:00");
-		orderDao.saveOrder(order);
+		Product product = productDao.get(1);
+		if (product.getStock() < 1) {
+			logger.info(Thread.currentThread().getName() + "库存不足");
+			return;
+		}
 		//
-		Product product = new Product();
 		product.setId(1);
 		product.setQty(1);
 		Boolean flag = productService.updateStock(product);
-		if(!flag) {
-			 System.out.println(Thread.currentThread().getName()+"，失败");
-			 throw new RuntimeException("库存扣减失败");
+		if (!flag) {
+			logger.info(Thread.currentThread().getName() + "，失败");
+			throw new RuntimeException("库存扣减失败");
 		}
-		System.out.println(Thread.currentThread().getName()+"，成功");
-	}
-	
-	/**
-	 * redis锁测试
-	 */
-	@Lock
-	@Transactional(propagation=Propagation.REQUIRED,isolation=Isolation.READ_COMMITTED )
-	public void testLock1() {
-		Product product = productDao.get(1);
-		if(product.getStock()<1) {
-			System.out.println(Thread.currentThread().getName()+"，库存不足");
-			return;
-		}
-		try {
-			TimeUnit.MILLISECONDS.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+
 		Order order = new Order();
 		order.setNo(SnowFlake.getNextId().toString());
 		order.setState(1);
 		order.setDesc("remark");
-		order.setGmtExpire("2021-03-19 20:53:00");
-		order.setGmtCreate("2021-03-19 20:53:00");
+		order.setGmtExpire(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+		order.setGmtCreate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 		orderDao.saveOrder(order);
+		logger.info(Thread.currentThread().getName() + "，成功");
+	}
+
+	/**
+	 * redis锁测试
+	 */
+	@Lock(value = "stock", expireTime = 2000)
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
+	public void  testLock1() {
+		Product product = productDao.get(1);
+		if (product.getStock() < 1) {
+			logger.info(Thread.currentThread().getName() + "，库存不足");
+			return;
+		}
 		//
 		product.setOldStock(product.getStock());
-		product.setNewStock(product.getStock()-1);
-		productDao.update(product);
-		System.out.println(Thread.currentThread().getName()+"，成功");
+		product.setNewStock(product.getStock() - 1);
+		logger.info("修改库存");
+		Integer count = productDao.update(product);
+		if(count==1) {
+			logger.info(Thread.currentThread().getName() + "，成功");
+			Order order = new Order();
+			order.setNo(SnowFlake.getNextId().toString());
+			order.setState(1);
+			order.setDesc("remark");
+			order.setGmtExpire(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+			order.setGmtCreate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+			orderDao.saveOrder(order);
+		}else {
+			System.out.println("库存扣减失败");
+		}
 	}
-	
+
 	@Transactional
 	public String test1() {
 		logger.info("执行目标方法test1");

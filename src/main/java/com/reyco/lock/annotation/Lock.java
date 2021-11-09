@@ -21,10 +21,15 @@ public @interface Lock {
 	 * 锁的名称
 	 * @return
 	 */
-	String name() default "Lock";
+	String value() default "default";
 	/**
-	 * 过期时间/秒
+	 * 过期时间/毫秒
 	 * @return
 	 */
-	int expireTime() default 10;
+	int expireTime() default 3000;
+	/**
+	 * 获取锁的超时时间：指定时间内没有获取到锁则丢弃,
+	 * @return
+	 */
+	int timeout() default 3000;
 }

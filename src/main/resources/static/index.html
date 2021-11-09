@@ -24,7 +24,7 @@
 <script type="text/javascript">
 
 function redisLock(){
-	for(var i=0;i<100;i++){
+	for(var i=0;i<300;i++){
 		$.ajax({
 			type:'get',
 			dataType:"text",
@@ -40,7 +40,7 @@ function redisLock(){
 	}
 }
 function mysqlLock(){
-	for(var i=0;i<100;i++){
+	for(var i=0;i<1000;i++){
 		$.ajax({
 			type:'get',
 			dataType:"text",
@@ -58,8 +58,8 @@ function mysqlLock(){
 </script>
 </head>
 <body>
-	<div style="display:inline"><a href="javascript:(0)" onclick="redisLock()">MySql加锁</a></div>
-	<div style="display:inline"><a href="javascript:(0)" onclick="mysqlLock()">Redis加锁</a></div>
+	<div style="display:inline"><a href="javascript:(0)" onclick="mysqlLock()">MySql加锁</a></div>
+	<div style="display:inline"><a href="javascript:(0)" onclick="redisLock()">Redis加锁</a></div>
 	
 </body>
 </html>
